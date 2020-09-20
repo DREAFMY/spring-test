@@ -58,10 +58,10 @@ public class RsService {
   public void buy(Trade trade, int rsEventId) {
     Optional<RsEventDto> rsEventDto = rsEventRepository.findById(rsEventId);
     if (!rsEventDto.isPresent()) {
-      throw new RuntimeException();
+      throw new CommonsException("未找到该热搜");
     }
     RsEventDto event = rsEventDto.get();
-    if (event.getPosition() < 0) {
+    if (event.getPosition() > 0) {
       TradeDto dbRecoder = tradeRepository.findFirstByRsEventIdOrderByAmount(event.getId(), Sort.by("amount").descending());
       if (dbRecoder.getAmount() > trade.getAmount()) {
         throw new CommonsException("金额不够");
