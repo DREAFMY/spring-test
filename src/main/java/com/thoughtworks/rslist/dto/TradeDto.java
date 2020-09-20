@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
@@ -16,12 +15,10 @@ import javax.persistence.Table;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "rsEvent")
-public class RsEventDto {
-  @Id @GeneratedValue private int id;
-  private String eventName;
-  private String keyword;
-  private int voteNum;
-  private int position = -1;
-  @ManyToOne private UserDto user;
+@Table(name = "trade")
+public class TradeDto {
+    @Id @GeneratedValue private int id;
+    private int amount;
+    private int rank;
+    private int rsEventId;
 }
