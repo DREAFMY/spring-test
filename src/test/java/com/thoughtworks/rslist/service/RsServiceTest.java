@@ -123,9 +123,8 @@ class RsServiceTest {
   }
 
   @Test
-  void should_throw_exception_when_not_found_event() throws Exception{
+  void should_throw_exception_when_not_found_event() {
     Trade trade = Trade.builder().amount(10).rank(1).build();
     rsService.buy(trade, 10000);
   }
-
 }

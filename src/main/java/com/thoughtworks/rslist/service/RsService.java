@@ -1,5 +1,6 @@
 package com.thoughtworks.rslist.service;
 
+import com.thoughtworks.rslist.domain.RsEvent;
 import com.thoughtworks.rslist.domain.Trade;
 import com.thoughtworks.rslist.domain.Vote;
 import com.thoughtworks.rslist.dto.RsEventDto;
@@ -13,8 +14,11 @@ import com.thoughtworks.rslist.repository.UserRepository;
 import com.thoughtworks.rslist.repository.VoteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -55,7 +59,8 @@ public class RsService {
     rsEventRepository.save(rsEvent);
   }
 
-  public void buy(Trade trade, int rsEventId) {
+  @Transactional
+  public ResponseEntity<Void> buy(Trade trade, int rsEventId) {
     Optional<RsEventDto> rsEventDto = rsEventRepository.findById(rsEventId);
     if (!rsEventDto.isPresent()) {
       throw new CommonsException("未找到该热搜");
@@ -79,5 +84,7 @@ public class RsService {
 
     TradeDto recoder = TradeDto.builder().amount(trade.getAmount()).rank(trade.getRank()).rsEventId(event.getId()).build();
     tradeRepository.save(recoder);
+
+    return ResponseEntity.ok().build();
   }
 }
