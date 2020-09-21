@@ -59,8 +59,18 @@ public class RsService {
     rsEventRepository.save(rsEvent);
   }
 
+  public void isTradeValid(Trade trade) {
+    if (trade.getAmount() <= 0) {
+      throw new CommonsException("购买金额不能小于0");
+    }
+    if (trade.getRank() > rsEventRepository.findAll().size() || trade.getRank() < 1) {
+      throw new CommonsException("购买位置不合法");
+    }
+  }
+
   @Transactional
   public void buy(Trade trade, int rsEventId) {
+    isTradeValid(trade);
     Optional<RsEventDto> rsEventDto = rsEventRepository.findById(rsEventId);
     if (!rsEventDto.isPresent()) {
       throw new CommonsException("未找到该热搜");
