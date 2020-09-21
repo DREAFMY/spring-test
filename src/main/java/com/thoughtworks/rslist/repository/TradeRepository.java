@@ -10,5 +10,7 @@ public interface TradeRepository extends CrudRepository<TradeDto, Integer>  {
     @Override
     List<TradeDto> findAll();
 
+    List<TradeDto> findByRank(int rank);
+
     TradeDto findFirstByRsEventIdOrderByAmount(Integer rsEventId, Sort sort);
 }

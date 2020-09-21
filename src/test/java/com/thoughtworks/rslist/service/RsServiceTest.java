@@ -16,6 +16,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -99,49 +100,41 @@ class RsServiceTest {
 
   @Test
   void shouldBuySuccess() {
-    UserDto userDto = UserDto.builder().voteNum(20).phone("18888888881").gender("male").email("asfa@b.com").age(18).userName("huahua").id(2).build();
-    RsEventDto rsEventDto = RsEventDto.builder().eventName("敲代码").keyword("programing").voteNum(5).user(userDto).id(1).build();
-    userRepository.save(userDto);
-    RsEventDto save = rsEventRepository.save(rsEventDto);
+    UserDto userDto =
+            UserDto.builder()
+                    .voteNum(5)
+                    .phone("18888888888")
+                    .gender("female")
+                    .email("a@b.com")
+                    .age(19)
+                    .userName("xiaoli")
+                    .id(2)
+                    .build();
+    RsEventDto rsEventDto =
+            RsEventDto.builder()
+                    .eventName("event name")
+                    .id(1)
+                    .keyword("keyword")
+                    .voteNum(2)
+                    .user(userDto)
+                    .position(-1)
+                    .build();
+    List<UserDto> ulist = new ArrayList<>();
+    List<RsEventDto> rlist = new ArrayList<>();
+    ulist.add(userDto);
+    rlist.add(rsEventDto);
+    when(rsEventRepository.findById(anyInt())).thenReturn(Optional.of(rsEventDto));
+    when(userRepository.findById(anyInt())).thenReturn(Optional.of(userDto));
+    when(userRepository.findAll()).thenReturn(ulist);
+    when(rsEventRepository.findAll()).thenReturn(rlist);
     Trade trade = Trade.builder().amount(2).rank(1).build();
 
-    rsService.buy(trade, save.getId());
-    List<TradeDto> all = tradeRepository.findAll();
-
-    assertEquals(5,all.get(0).getAmount());
-    assertEquals(1,all.get(0).getRank());
-    assertEquals(save.getId(),all.get(0).getRsEventId());
+    rsService.buy(trade, 1);
+    verify(tradeRepository).save(
+                    TradeDto.builder()
+                            .amount(2)
+                            .rank(1)
+                            .rsEventId(1)
+                            .build());
   }
-
-//  @Test
-//  void shouldAddTradeWhenRankIsNotTraded(){
-//    // given
-//    Trade trade = Trade.builder().amount(1).rank(1).build();
-//
-//    TradeDto tradeDto = TradeDto.builder().amount(1).rank(1).build();
-//    when(tradeRepository.findByRank(trade.getRank())).thenReturn(Optional.ofNullable(null));
-//    // when
-//    rsService.buy(trade, anyInt());
-//    // then
-//    verify(tradeRepository).save(tradeDto);
-//  }
-//
-//  @Test
-//  void should_throw_exception_when_money_less() {
-//    UserDto userDto = UserDto.builder().voteNum(20).phone("18888888811").gender("male").email("astrfa@b.com").age(44).userName("xixi").build();
-//    RsEventDto rsEventDto = RsEventDto.builder().eventName("写作业").keyword("homework").voteNum(2).user(userDto).build();
-//    RsEventDto save = rsEventRepository.save(rsEventDto);
-//    Trade trade = Trade.builder().amount(10).rank(1).build();
-//    rsService.buy(trade, save.getId());
-//    trade.setAmount(1);
-//
-//    assertThrows(CommonsException.class, () -> {rsService.buy(trade, save.getId());});
-//  }
-//
-//  @Test
-//  void should_throw_exception_when_not_found_event() {
-//    Trade trade = Trade.builder().amount(10).rank(1).build();
-//
-//    assertThrows(CommonsException.class, () -> {rsService.buy(trade, 10000);});
-//  }
 }

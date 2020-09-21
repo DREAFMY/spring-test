@@ -1,11 +1,16 @@
 package com.thoughtworks.rslist.api;
 
+import com.thoughtworks.rslist.domain.Trade;
 import com.thoughtworks.rslist.dto.RsEventDto;
+import com.thoughtworks.rslist.dto.TradeDto;
 import com.thoughtworks.rslist.dto.UserDto;
 import com.thoughtworks.rslist.dto.VoteDto;
 import com.thoughtworks.rslist.repository.RsEventRepository;
+import com.thoughtworks.rslist.repository.TradeRepository;
 import com.thoughtworks.rslist.repository.UserRepository;
 import com.thoughtworks.rslist.repository.VoteRepository;
+import com.thoughtworks.rslist.service.RsService;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +40,10 @@ class RsControllerTest {
   @Autowired UserRepository userRepository;
   @Autowired RsEventRepository rsEventRepository;
   @Autowired VoteRepository voteRepository;
+  @Autowired
+  TradeRepository tradeRepository;
+  @Autowired
+  RsService rsService;
   private UserDto userDto;
 
   @BeforeEach
@@ -42,6 +51,7 @@ class RsControllerTest {
     voteRepository.deleteAll();
     rsEventRepository.deleteAll();
     userRepository.deleteAll();
+    tradeRepository.deleteAll();
     userDto =
         UserDto.builder()
             .voteNum(10)
@@ -52,6 +62,7 @@ class RsControllerTest {
             .userName("idolice")
             .build();
   }
+
 
   @Test
   public void shouldGetRsEventList() throws Exception {
@@ -184,5 +195,19 @@ class RsControllerTest {
     List<VoteDto> voteDtos =  voteRepository.findAll();
     assertEquals(voteDtos.size(), 1);
     assertEquals(voteDtos.get(0).getNum(), 1);
+  }
+
+  @Test
+  void shouldBuySuccess() {
+    UserDto userDto = UserDto.builder().voteNum(20).phone("18888888881").gender("male").email("asfa@b.com").age(18).userName("huahua").build();
+    RsEventDto rsEventDto = RsEventDto.builder().eventName("alfjaasfa").keyword("programing").voteNum(5).user(userDto).build();
+    userRepository.save(userDto);
+    RsEventDto save = rsEventRepository.save(rsEventDto);
+    Trade trade = Trade.builder().amount(2).rank(1).build();
+    rsService.buy(trade, save.getId());
+    List<TradeDto> all = tradeRepository.findAll();
+    assertEquals(2,all.get(0).getAmount());
+    assertEquals(1,all.get(0).getRank());
+    assertEquals(save.getId(),all.get(0).getRsEventId());
   }
 }

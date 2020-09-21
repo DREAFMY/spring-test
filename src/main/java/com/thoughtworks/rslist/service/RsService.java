@@ -18,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -59,6 +60,22 @@ public class RsService {
     rsEventRepository.save(rsEvent);
   }
 
+  public List<RsEventDto> orderRsList() {
+    List<RsEventDto> events = new ArrayList<>();
+    List<RsEventDto> positionEvents = new ArrayList<>();
+    rsEventRepository.findAll(Sort.by(Sort.Direction.DESC, "voteNum")).forEach(item -> {
+      if (item.getPosition() == -1) {
+        events.add(item);
+      } else {
+        positionEvents.add(item);
+      }
+    });
+    for (RsEventDto rsEventDto : positionEvents) {
+      events.add(rsEventDto.getPosition() - 1, rsEventDto);
+    }
+    return events;
+  }
+
   public void isTradeValid(Trade trade) {
     if (trade.getAmount() <= 0) {
       throw new CommonsException("购买金额不能小于0");
@@ -67,26 +84,6 @@ public class RsService {
       throw new CommonsException("购买位置不合法");
     }
   }
-
-//  public ResponseEntity buy(Trade trade, int id) {
-//    Optional<TradeDto> tradeDto = tradeRepository.findByRank(trade.getRank());
-//    if(tradeDto.isPresent() && tradeDto.get().getAmount() > trade.getAmount()){
-//      return ResponseEntity.badRequest().build();
-//    }else{
-//      TradeDto tradeDtoToSave = TradeDto.builder().amount(trade.getAmount())
-//              .rank(trade.getRank()).build();
-//      tradeDto.ifPresent(dto -> rsEventRepository.deleteByTradeRank(dto.getRank()));
-//      tradeDto.ifPresent(dto -> tradeRepository.deleteByRank(dto.getRank()));
-//
-//      Optional<RsEventDto> rsEventDtoTraded = rsEventRepository.findById(id);
-//      if(rsEventDtoTraded.isPresent()) {
-//        rsEventDtoTraded.get().setTradeRank(trade.getRank());
-//        rsEventRepository.save(rsEventDtoTraded.get());
-//      }
-//      tradeRepository.save(tradeDtoToSave);
-//      return ResponseEntity.ok().build();
-//    }
-//  }
 
   @Transactional
   public void buy(Trade trade, int rsEventId) {

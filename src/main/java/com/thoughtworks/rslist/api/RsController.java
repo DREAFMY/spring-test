@@ -5,6 +5,7 @@ import com.thoughtworks.rslist.domain.Trade;
 import com.thoughtworks.rslist.domain.Vote;
 import com.thoughtworks.rslist.dto.RsEventDto;
 import com.thoughtworks.rslist.dto.UserDto;
+import com.thoughtworks.rslist.exception.CommonsException;
 import com.thoughtworks.rslist.exception.Error;
 import com.thoughtworks.rslist.exception.RequestNotValidException;
 import com.thoughtworks.rslist.repository.RsEventRepository;
@@ -104,6 +105,13 @@ public class RsController {
 
   @ExceptionHandler(RequestNotValidException.class)
   public ResponseEntity<Error> handleRequestErrorHandler(RequestNotValidException e) {
+    Error error = new Error();
+    error.setError(e.getMessage());
+    return ResponseEntity.badRequest().body(error);
+  }
+
+  @ExceptionHandler(CommonsException.class)
+  public ResponseEntity<Error> commonErrorHandler(CommonsException e) {
     Error error = new Error();
     error.setError(e.getMessage());
     return ResponseEntity.badRequest().body(error);

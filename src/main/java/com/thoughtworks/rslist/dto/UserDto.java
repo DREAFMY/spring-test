@@ -1,9 +1,7 @@
 package com.thoughtworks.rslist.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.*;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -30,8 +28,9 @@ public class UserDto {
     private int age;
     private String email;
     private String phone;
-    private int voteNum =10;
+    private int voteNum = 10;
 
+    @JsonIgnore
     @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "user")
     private List<RsEventDto> rsEventDtos;
 }
