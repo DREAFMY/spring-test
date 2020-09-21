@@ -104,6 +104,7 @@ class RsServiceTest {
     userRepository.save(userDto);
     RsEventDto save = rsEventRepository.save(rsEventDto);
     Trade trade = Trade.builder().amount(2).rank(1).build();
+
     rsService.buy(trade, save.getId());
     List<TradeDto> all = tradeRepository.findAll();
 
@@ -112,22 +113,35 @@ class RsServiceTest {
     assertEquals(save.getId(),all.get(0).getRsEventId());
   }
 
-  @Test
-  void should_throw_exception_when_money_less() {
-    UserDto userDto = UserDto.builder().voteNum(20).phone("18888888811").gender("male").email("astrfa@b.com").age(44).userName("xixi").build();
-    RsEventDto rsEventDto = RsEventDto.builder().eventName("写作业").keyword("homework").voteNum(2).user(userDto).build();
-    RsEventDto save = rsEventRepository.save(rsEventDto);
-    Trade trade = Trade.builder().amount(10).rank(1).build();
-    rsService.buy(trade, save.getId());
-    trade.setAmount(1);
-
-    assertThrows(CommonsException.class, () -> {rsService.buy(trade, save.getId());});
-  }
-
-  @Test
-  void should_throw_exception_when_not_found_event() {
-    Trade trade = Trade.builder().amount(10).rank(1).build();
-
-    assertThrows(CommonsException.class, () -> {rsService.buy(trade, 10000);});
-  }
+//  @Test
+//  void shouldAddTradeWhenRankIsNotTraded(){
+//    // given
+//    Trade trade = Trade.builder().amount(1).rank(1).build();
+//
+//    TradeDto tradeDto = TradeDto.builder().amount(1).rank(1).build();
+//    when(tradeRepository.findByRank(trade.getRank())).thenReturn(Optional.ofNullable(null));
+//    // when
+//    rsService.buy(trade, anyInt());
+//    // then
+//    verify(tradeRepository).save(tradeDto);
+//  }
+//
+//  @Test
+//  void should_throw_exception_when_money_less() {
+//    UserDto userDto = UserDto.builder().voteNum(20).phone("18888888811").gender("male").email("astrfa@b.com").age(44).userName("xixi").build();
+//    RsEventDto rsEventDto = RsEventDto.builder().eventName("写作业").keyword("homework").voteNum(2).user(userDto).build();
+//    RsEventDto save = rsEventRepository.save(rsEventDto);
+//    Trade trade = Trade.builder().amount(10).rank(1).build();
+//    rsService.buy(trade, save.getId());
+//    trade.setAmount(1);
+//
+//    assertThrows(CommonsException.class, () -> {rsService.buy(trade, save.getId());});
+//  }
+//
+//  @Test
+//  void should_throw_exception_when_not_found_event() {
+//    Trade trade = Trade.builder().amount(10).rank(1).build();
+//
+//    assertThrows(CommonsException.class, () -> {rsService.buy(trade, 10000);});
+//  }
 }

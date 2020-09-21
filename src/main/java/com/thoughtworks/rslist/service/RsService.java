@@ -68,6 +68,26 @@ public class RsService {
     }
   }
 
+//  public ResponseEntity buy(Trade trade, int id) {
+//    Optional<TradeDto> tradeDto = tradeRepository.findByRank(trade.getRank());
+//    if(tradeDto.isPresent() && tradeDto.get().getAmount() > trade.getAmount()){
+//      return ResponseEntity.badRequest().build();
+//    }else{
+//      TradeDto tradeDtoToSave = TradeDto.builder().amount(trade.getAmount())
+//              .rank(trade.getRank()).build();
+//      tradeDto.ifPresent(dto -> rsEventRepository.deleteByTradeRank(dto.getRank()));
+//      tradeDto.ifPresent(dto -> tradeRepository.deleteByRank(dto.getRank()));
+//
+//      Optional<RsEventDto> rsEventDtoTraded = rsEventRepository.findById(id);
+//      if(rsEventDtoTraded.isPresent()) {
+//        rsEventDtoTraded.get().setTradeRank(trade.getRank());
+//        rsEventRepository.save(rsEventDtoTraded.get());
+//      }
+//      tradeRepository.save(tradeDtoToSave);
+//      return ResponseEntity.ok().build();
+//    }
+//  }
+
   @Transactional
   public void buy(Trade trade, int rsEventId) {
     isTradeValid(trade);
@@ -89,8 +109,8 @@ public class RsService {
       rsEventRepository.deleteById(event.getId());
     }
 
-    event.setPosition(trade.getRank());
-    rsEventRepository.save(event);
+      event.setPosition(trade.getRank());
+      rsEventRepository.save(event);
 
     TradeDto recoder = TradeDto.builder().amount(trade.getAmount()).rank(trade.getRank()).rsEventId(event.getId()).build();
     tradeRepository.save(recoder);
