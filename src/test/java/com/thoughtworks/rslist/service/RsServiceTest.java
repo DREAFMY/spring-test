@@ -99,32 +99,35 @@ class RsServiceTest {
 
   @Test
   void shouldBuySuccess() {
-    UserDto userDto = UserDto.builder().voteNum(20).phone("18888888881").gender("male").email("asfa@b.com").age(18).userName("huahua").build();
-    RsEventDto rsEventDto = RsEventDto.builder().eventName("敲代码").keyword("programing").voteNum(5).user(userDto).build();
+    UserDto userDto = UserDto.builder().voteNum(20).phone("18888888881").gender("male").email("asfa@b.com").age(18).userName("huahua").id(2).build();
+    RsEventDto rsEventDto = RsEventDto.builder().eventName("敲代码").keyword("programing").voteNum(5).user(userDto).id(1).build();
     userRepository.save(userDto);
     RsEventDto save = rsEventRepository.save(rsEventDto);
     Trade trade = Trade.builder().amount(2).rank(1).build();
     rsService.buy(trade, save.getId());
     List<TradeDto> all = tradeRepository.findAll();
+
     assertEquals(5,all.get(0).getAmount());
     assertEquals(1,all.get(0).getRank());
     assertEquals(save.getId(),all.get(0).getRsEventId());
   }
 
   @Test
-  void should_throw_exception_when_money_less() throws Exception{
+  void should_throw_exception_when_money_less() {
     UserDto userDto = UserDto.builder().voteNum(20).phone("18888888811").gender("male").email("astrfa@b.com").age(44).userName("xixi").build();
     RsEventDto rsEventDto = RsEventDto.builder().eventName("写作业").keyword("homework").voteNum(2).user(userDto).build();
     RsEventDto save = rsEventRepository.save(rsEventDto);
     Trade trade = Trade.builder().amount(10).rank(1).build();
     rsService.buy(trade, save.getId());
     trade.setAmount(1);
-    rsService.buy(trade, save.getId());
+
+    assertThrows(CommonsException.class, () -> {rsService.buy(trade, save.getId());});
   }
 
   @Test
   void should_throw_exception_when_not_found_event() {
     Trade trade = Trade.builder().amount(10).rank(1).build();
-    rsService.buy(trade, 10000);
+
+    assertThrows(CommonsException.class, () -> {rsService.buy(trade, 10000);});
   }
 }

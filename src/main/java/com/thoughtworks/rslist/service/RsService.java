@@ -60,7 +60,7 @@ public class RsService {
   }
 
   @Transactional
-  public ResponseEntity<Void> buy(Trade trade, int rsEventId) {
+  public void buy(Trade trade, int rsEventId) {
     Optional<RsEventDto> rsEventDto = rsEventRepository.findById(rsEventId);
     if (!rsEventDto.isPresent()) {
       throw new CommonsException("未找到该热搜");
@@ -84,7 +84,5 @@ public class RsService {
 
     TradeDto recoder = TradeDto.builder().amount(trade.getAmount()).rank(trade.getRank()).rsEventId(event.getId()).build();
     tradeRepository.save(recoder);
-
-    return ResponseEntity.ok().build();
   }
 }
